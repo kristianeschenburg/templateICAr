@@ -2,11 +2,11 @@
 #'
 #' Estimate template for Template or Diagnostic ICA based on CIFTI-format data
 #'
-#' @param cifti_fnames Vector of file paths of CIFTI-format fMRI timeseries
+#' @param gifti_fnames Vector of file paths of GIFTI-format fMRI timeseries
 #'  (*.dtseries.nii) for template estimation
-#' @param cifti_fnames2 Vector of file paths of "retest" CIFTI-format fMRI
+#' @param gifti_fnames2 Vector of file paths of "retest" GIFTI-format fMRI
 #'  timeseries (*.dtseries.nii) for template estimation.  Must be from the same
-#'  subjects and in the same order as cifti_fnames.  If none specified, will
+#'  subjects and in the same order as gifti_fnames.  If none specified, will
 #'  create pseudo test-retest data from single session.
 #' @param GICA_fname File path of CIFTI-format group ICA maps (ending in .d*.nii)
 #' @param inds Indicators of which group ICs to include in template. If NULL,
@@ -51,7 +51,7 @@ estimate_template.gifti <- function(
     if(length(gifti_fnames) != length(gifti_fnames2)) stop('If provided, gifti_fnames2 must have same length as gifti_fnames and be in the same subject order.')
   }
 
-  notthere <- sum(!file.exists(cifti_fnames))
+  notthere <- sum(!file.exists(gifti_fnames))
   if(notthere == length(gifti_fnames)) stop('The files in gifti_fnames do not exist.')
   if(notthere > 0) warning(paste0('There are ', notthere, ' files in gifti_fnames that do not exist. These scans will be excluded from template estimation.'))
   if(retest) {
