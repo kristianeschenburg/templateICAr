@@ -151,16 +151,24 @@ estimate_template.gifti <- function(
   mean2 <- apply(DR2, c(2,3), mean, na.rm=TRUE)
   template_mean <- t((mean1 + mean2)/2)
 
+  cat('\n Mean dimensions')
+  cat(dim(template_mean))
+
   # total variance
   if(verbose) cat('\n Estimating Total Variance')
   var_tot1 <- apply(DR1, c(2,3), var, na.rm=TRUE)
   var_tot2 <- apply(DR2, c(2,3), var, na.rm=TRUE)
   var_tot <- t((var_tot1 + var_tot2)/2)
+  
+  cat('\n Total variance dimensions')
+  cat(dim(var_tot))
 
   # noise (within-subject) variance
   if(verbose) cat('\n Estimating Within-Subject Variance')
   DR_diff <- DR1 - DR2;
   var_noise <- t((1/2)*apply(DR_diff, c(2,3), var, na.rm=TRUE))
+  cat('\n Variance noise dimensions')
+  cat(dim(var_noise))
 
   # signal (between-subject) variance
   if(verbose) cat('\n Estimating Template (Between-Subject) Variance \n')
