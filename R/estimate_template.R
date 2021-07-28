@@ -171,7 +171,7 @@ estimate_template.gifti <- function(
 
   gifti_mean <- gifti_var <- GICA
   gifti_mean$data$unknown = template_mean
-  gifti_mean$data$unknown = template_var
+  gifti_var$data$unknown = template_var
 
   out_fname_mean <- paste0(out_fname, '_mean.func.gii')
   out_fname_var <- paste0(out_fname, '_var.func.gii')
