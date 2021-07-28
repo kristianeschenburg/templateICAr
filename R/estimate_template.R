@@ -33,8 +33,8 @@
 #'
 
 estimate_template.gifti <- function(
-  gifti_names, 
-  gifti_names2=NULL,
+  gifti_fnames, 
+  gifti_fnames2=NULL,
   GICA_fname,
   inds=NULL,
   parts=4,
