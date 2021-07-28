@@ -178,10 +178,8 @@ estimate_template.gifti <- function(
 
   write_gifti(gifti_mean, out_fname_mean)
   write_gifti(gifti_var, out_fname_var)
-pwd
 
-  }
-)
+}
 
 estimate_template.cifti <- function(
   cifti_fnames,
