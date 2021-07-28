@@ -167,16 +167,19 @@ estimate_template.gifti <- function(
   if(verbose) cat('\n Estimating Within-Subject Variance')
   DR_diff <- DR1 - DR2;
   var_noise <- t((1/2)*apply(DR_diff, c(2,3), var, na.rm=TRUE))
-  cat('\n Variance noise dimensions')
+  cat('\n Within-subject variance dimensions')
   cat(dim(var_noise))
 
   # signal (between-subject) variance
   if(verbose) cat('\n Estimating Template (Between-Subject) Variance \n')
   template_var <- var_tot - var_noise
   template_var[template_var < 0] <- 0
+  cat('\n Between subject variance dimensions')
+  cat(dim(template_var))
 
   rm(DR1, DR2, mean1, mean2, var_tot1, var_tot2, var_tot, DR_diff)
 
+  cat('\n Assigning mean and variance estimates to GIFTI objects.')
   gifti_mean <- gifti_var <- GICA
   gifti_mean$data$unknown = template_mean
   gifti_var$data$unknown = template_var
@@ -184,8 +187,9 @@ estimate_template.gifti <- function(
   out_fname_mean <- paste0(out_fname, '_mean.func.gii')
   out_fname_var <- paste0(out_fname, '_var.func.gii')
 
-  write_gifti(gifti_mean, out_fname_mean)
-  write_gifti(gifti_var, out_fname_var)
+  cat('\n Writing GIFTI objects to disk.')
+  write_gifti(gii=gifti_mean, out_file=out_fname_mean)
+  write_gifti(gii=gifti_var, out_file=out_fname_var)
 
 }
 
