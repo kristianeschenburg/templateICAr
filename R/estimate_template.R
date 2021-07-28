@@ -180,9 +180,11 @@ estimate_template.gifti <- function(
   rm(DR1, DR2, mean1, mean2, var_tot1, var_tot2, var_tot, DR_diff)
 
   cat('\n Assigning mean and variance estimates to GIFTI objects.')
+  field_name = names(GICA$data)[1]
+
   gifti_mean <- gifti_var <- GICA
-  gifti_mean$data$unknown = template_mean
-  gifti_var$data$unknown = template_var
+  gifti_mean$data[[field_name]] = template_mean
+  gifti_var$data[[field_name]] = template_var
 
   out_fname_mean <- paste0(out_fname, '_mean.func.gii')
   out_fname_var <- paste0(out_fname, '_var.func.gii')
