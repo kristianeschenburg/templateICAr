@@ -31,6 +31,158 @@
 #'
 #' @export
 #'
+
+estimate_template.gifti <- function(
+  gifti_names, 
+  gifti_names2=NULL,
+  GICA_fname,
+  inds=NULL,
+  parts=4,
+  scale=TRUE,
+  verbose=TRUE,
+  out_fname=NULL) {
+    
+    if(!is.null(out_fname)){
+    if(!dir.exists(dirname(out_fname))) stop('directory part of out_fname does not exist')
+  }
+
+  retest <- !is.null(gifti_fnames2)
+  if(retest){
+    if(length(gifti_fnames) != length(gifti_fnames2)) stop('If provided, gifti_fnames2 must have same length as gifti_fnames and be in the same subject order.')
+  }
+
+  notthere <- sum(!file.exists(cifti_fnames))
+  if(notthere == length(gifti_fnames)) stop('The files in gifti_fnames do not exist.')
+  if(notthere > 0) warning(paste0('There are ', notthere, ' files in gifti_fnames that do not exist. These scans will be excluded from template estimation.'))
+  if(retest) {
+    notthere2 <- sum(!file.exists(gifti_fnames2))
+    if(notthere2 == length(gifti_fnames2)) stop('The files in gifti_fnames2 do not exist.')
+    if(notthere2 > 0) warning(paste0('There are ', notthere2, ' files in gifti_fnames2 that do not exist. These scans will be excluded from template estimation.'))
+  }
+
+  # Check arguments.
+  if (!is.logical(scale) || length(scale) != 1) { stop('scale must be a logical value') }
+
+  # Read GICA result
+  if(verbose) { cat('\n Reading in GICA result') }
+  GICA <- read_gifti(GICA_fname)
+  GICA_flat <- do.call("cbind", GICA$data)
+  V <- nrow(GICA_flat); Q <- ncol(GICA_flat)
+  # Center each IC map.
+  GICA_flat <- scale(GICA_flat, scale=FALSE)
+  if(verbose) {
+    cat(paste0('\n Number of data locations: ',V))
+    cat(paste0('\n Number of original group ICs: ',Q))
+  }
+
+  L <- Q
+  if(!is.null(inds)){
+    if(any(!(inds %in% 1:Q))) stop('Invalid entries in inds argument.')
+    L <- length(inds)
+  } else {
+    inds <- 1:Q
+  }
+
+  N <- length(gifti_fnames)
+
+  if(verbose){
+    cat(paste0('\n Number of template ICs: ',L))
+    cat(paste0('\n Number of training subjects: ',N))
+  }
+
+  # PERFORM DUAL REGRESSION ON (PSEUDO) TEST-RETEST DATA
+  DR1 <- DR2 <- array(NA, dim=c(N, L, V))
+  missing_data <- NULL
+  for(ii in 1:N){
+
+    if(verbose) cat(paste0('\n Reading and analyzing data for subject ',ii,' of ',N))
+
+    #read in BOLD
+    fname_ii <- gifti_fnames[ii]
+    if(!file.exists(fname_ii)) {
+      missing_data <- c(missing_data, fname_ii)
+      if(verbose) cat(paste0('\n Data not available for file:', fname_ii))
+      next
+    }
+
+    BOLD1_ii <- do.call(cbind, read_gifti(fname_ii)$data)
+    if(nrow(BOLD1_ii) != nrow(GICA_flat)) {
+      stop(paste0(
+        'The number of data locations in GICA and',
+        'BOLD data from subject ', ii,' do not match.'
+      ))
+    }
+    ntime <- ncol(BOLD1_ii)
+
+    #read in BOLD retest data OR create pseudo test-retest data
+    if(!retest){
+      part1 <- 1:round(ntime/2)
+      part2 <- setdiff(1:ntime, part1)
+      BOLD2_ii <- BOLD1_ii[,part2]
+      BOLD1_ii <- BOLD1_ii[,part1]
+    } else {
+      #read in BOLD from retest
+      fname_ii <- gifti_fnames2[ii]
+      if(!file.exists(fname_ii)) {
+        missing_data <- c(missing_data, fname_ii)
+        if(verbose) cat(paste0('\n Data not available for this file:', fname_ii))
+        next
+      }
+      BOLD2_ii <- do.call(cbind, read_gifti(fname_ii)$data)
+      if (nrow(BOLD2_ii) != nrow(GICA_flat)) {
+        stop(paste0(
+          'The number of data locations in GICA and',
+          'BOLD data from subject ', ii,' do not match.'
+        ))
+      }
+    }
+
+    #perform dual regression on test and retest data
+    DR1_ii <- dual_reg(BOLD1_ii, GICA_flat, scale=scale)$S
+    DR2_ii <- dual_reg(BOLD2_ii, GICA_flat, scale=scale)$S
+    DR1[ii,,] <- DR1_ii[inds,]
+    DR2[ii,,] <- DR2_ii[inds,]
+  }
+
+  # ESTIMATE MEAN
+
+  if(verbose) cat('\n Estimating Template Mean')
+  mean1 <- apply(DR1, c(2,3), mean, na.rm=TRUE)
+  mean2 <- apply(DR2, c(2,3), mean, na.rm=TRUE)
+  template_mean <- t((mean1 + mean2)/2)
+
+  # total variance
+  if(verbose) cat('\n Estimating Total Variance')
+  var_tot1 <- apply(DR1, c(2,3), var, na.rm=TRUE)
+  var_tot2 <- apply(DR2, c(2,3), var, na.rm=TRUE)
+  var_tot <- t((var_tot1 + var_tot2)/2)
+
+  # noise (within-subject) variance
+  if(verbose) cat('\n Estimating Within-Subject Variance')
+  DR_diff <- DR1 - DR2;
+  var_noise <- t((1/2)*apply(DR_diff, c(2,3), var, na.rm=TRUE))
+
+  # signal (between-subject) variance
+  if(verbose) cat('\n Estimating Template (Between-Subject) Variance \n')
+  template_var <- var_tot - var_noise
+  template_var[template_var < 0] <- 0
+
+  rm(DR1, DR2, mean1, mean2, var_tot1, var_tot2, var_tot, DR_diff)
+
+  gifti_mean <- gifti_var <- GICA
+  gifti_mean$data$unknown = template_mean
+  gifti_mean$data$unknown = template_var
+
+  out_fname_mean <- paste0(out_fname, '_mean.func.gii')
+  out_fname_var <- paste0(out_fname, '_var.func.gii')
+
+  write_gifti(gifti_mean, out_fname_mean)
+  write_gifti(gifti_var, out_fname_var)
+pwd
+
+  }
+)
+
 estimate_template.cifti <- function(
   cifti_fnames,
   cifti_fnames2=NULL,
