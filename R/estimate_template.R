@@ -37,7 +37,6 @@ estimate_template.gifti <- function(
 
   gifti_fnames = as.character(read.table(gifti_fnames))
 
-  notthere <- sum(!file.exists(gifti_fnames))
   if(notthere == length(gifti_fnames)) stop('The files in gifti_fnames do not exist.')
   if(notthere > 0) warning(paste0('There are ', notthere, ' files in gifti_fnames that do not exist. These scans will be excluded from template estimation.'))
 
