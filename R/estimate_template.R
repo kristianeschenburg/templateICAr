@@ -2,9 +2,9 @@
 #'
 #' Estimate template for Template or Diagnostic ICA based on CIFTI-format data
 #'
-#' @param gifti_fnames Vector of file paths of GIFTI-format fMRI timeseries
-#'  (*.dtseries.nii) for template estimation
-#' @param GICA_fname File path of CIFTI-format group ICA maps (ending in .d*.nii)
+#' @param gifti_fnames text file containing list of subject-level resting-state
+#' from which to compute template estimates
+#' @param GICA_fname text file pointing to group-ICA templates
 #' @param inds Indicators of which group ICs to include in template. If NULL,
 #'  use all group ICs.
 #' @param scale Logical indicating whether BOLD data should be scaled by the
@@ -36,8 +36,6 @@ estimate_template.gifti <- function(
   }
 
   gifti_fnames = as.character(read.table(gifti_fnames))
-  GICA_fname = as.character(read.table(GICA_fname))[1]
-
 
   notthere <- sum(!file.exists(gifti_fnames))
   if(notthere == length(gifti_fnames)) stop('The files in gifti_fnames do not exist.')
