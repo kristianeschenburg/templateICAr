@@ -2,9 +2,9 @@
 #'
 #' Estimate template for Template or Diagnostic ICA based on CIFTI-format data
 #'
-#' @param gifti_fnames text file containing list of subject-level resting-state
-#' from which to compute template estimates
-#' @param GICA_fname text file pointing to group-ICA templates
+#' @param gifti_fnames Vector of file paths of GIFTI-format fMRI timeseries
+#'  (*.dtseries.nii) for template estimation
+#' @param GICA_fname File path of CIFTI-format group ICA maps (ending in .d*.nii)
 #' @param inds Indicators of which group ICs to include in template. If NULL,
 #'  use all group ICs.
 #' @param scale Logical indicating whether BOLD data should be scaled by the
@@ -24,7 +24,7 @@
 #'
 
 estimate_template.gifti <- function(
-  gifti_fnames, 
+  gifti_fnames,
   GICA_fname,
   inds=NULL,
   scale=TRUE,
@@ -93,20 +93,20 @@ estimate_template.gifti <- function(
         'BOLD data from subject ', ii,' do not match.'
       ))
     }
-
     ntime <- ncol(BOLD1_ii)
 
-    # read in BOLD retest data and create pseudo test-retest data
+    # read in BOLD data and create pseudo test-retest data
     part1 <- 1:round(ntime/2)
     part2 <- setdiff(1:ntime, part1)
     BOLD2_ii <- BOLD1_ii[,part2]
     BOLD1_ii <- BOLD1_ii[,part1]
-    
-    # perform dual regression on test and retest data
+
+    # perform dual regression on split BOLD data
     DR1_ii <- dual_reg(BOLD1_ii, GICA_flat, scale=scale)$S
     DR2_ii <- dual_reg(BOLD2_ii, GICA_flat, scale=scale)$S
     DR1[ii,,] <- DR1_ii[inds,]
     DR2[ii,,] <- DR2_ii[inds,]
+  }
 
   # ESTIMATE MEAN
 
