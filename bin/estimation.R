@@ -2,7 +2,7 @@
 
 library('optparse')
 library('gifti')
-# library('templateICAr')
+library('templateICAr')
 
 option_list = list(
     make_option(c("-b", "--boldFiles"), 
