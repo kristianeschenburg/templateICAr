@@ -35,7 +35,7 @@ estimate_template.gifti <- function(
     if(!dir.exists(dirname(out_fname))) stop('directory part of out_fname does not exist')
   }
 
-  gifti_fnames = as.character(read.table(gifti_fnames))
+  gifti_fnames = as.character(read.table(gifti_fnames)$V1)
 
   # Check arguments.
   if (!is.logical(scale) || length(scale) != 1) { stop('scale must be a logical value') }
