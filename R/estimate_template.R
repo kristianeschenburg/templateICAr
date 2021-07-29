@@ -183,8 +183,9 @@ estimate_template.gifti <- function(
   field_name = names(GICA$data)[1]
 
   gifti_mean <- gifti_var <- GICA
-  gifti_mean$data[[field_name]] = template_mean
-  gifti_var$data[[field_name]] = template_var
+  
+  for (i in 1:Q) { gifti_mean$data[[i]] = template_mean[,i] }
+  for (i in 1:Q) { gifti_var$data[[i]] = template_var[,i] }
 
   out_fname_mean <- paste0(out_fname, '_mean.func.gii')
   out_fname_var <- paste0(out_fname, '_var.func.gii')
