@@ -125,6 +125,7 @@ templateICA.cifti <- function(cifti_fname,
 
 
   # READ IN BOLD TIMESERIES DATA
+  # if resamp_res == NULL, still removes the midline indices
   if(!file.exists(cifti_fname)) stop(paste0('The BOLD timeseries file ',cifti_fname,' does not exist.'))
   if(verbose) cat('Reading in BOLD timeseries data.\n')
   BOLD_cifti <- read_cifti(cifti_fname,
