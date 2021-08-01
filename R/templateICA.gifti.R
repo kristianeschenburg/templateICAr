@@ -42,16 +42,20 @@ templateICA.gifti <- function(gifti_fname,
 
   # READ THE MEDIAL WALL FILE
   if(!file.exists(mwall)) stop(paste0('The medial wall file ', mwall, ' does not exist.'))
-  if(verbose) cat('Reading the medial wall file.')
+  if(verbose) cat('Reading the medial wall file.\n')
   mwall <- as.matrix(read.table(mwall))
 
   # GET TEMPLATE MEAN AND VARIANCE (xifti objects)
+  if(!file.exists(template_mean)) stop(paste0('The mean estimate file ', template_mean, ' does not exist.'))
+  if(verbose) cat('Reading mean estimate file.\n')
   template_mean <- read_gifti(template_mean)
   icaMean <- do.call(cbind, template_mean$data)
   icaMean <- icaMean[mwall,]
 
   V <- nrow(icaMean); Q <- ncol(icaMean)
 
+  if(!file.exists(template_var)) stop(paste0('The variance estimate file ', template_var, ' does not exist.'))
+  if(verbose) cat('Reading variance estimate file.\n')
   template_var <- read_gifti(template_var)
   icaVar <- do.call(cbind, template_var$data)
   icaVar <- icaVar[mwall,]
