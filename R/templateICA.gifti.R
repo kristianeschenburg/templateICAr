@@ -47,7 +47,7 @@ templateICA.gifti <- function(gifti_fname,
 
   # GET TEMPLATE MEAN AND VARIANCE (xifti objects)
   template_mean <- read_gifti(template_mean)
-  icaMean <- do.all(cbind, template_mean$data)
+  icaMean <- do.call(cbind, template_mean$data)
   icaMean <- icaMEAN[mwall,]
 
   V <- nrow(icaMean); Q <- ncol(icaMean)
