@@ -43,7 +43,7 @@ templateICA.gifti <- function(gifti_fname,
   # READ THE MEDIAL WALL FILE
   if(!file.exists(mwall)) stop(paste0('The medial wall file ', mwall, ' does not exist.'))
   if(verbose) cat('Reading the medial wall file.')
-  mwall <- read.table(mwall)
+  mwall <- as.matrix(read.table(mwall))
 
   # GET TEMPLATE MEAN AND VARIANCE (xifti objects)
   template_mean <- read_gifti(template_mean)
