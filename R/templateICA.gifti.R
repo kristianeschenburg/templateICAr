@@ -82,13 +82,19 @@ templateICA.gifti <- function(gifti_fname,
                         kappa_init=kappa_init)
 
   est_mean <- est_var <- template_mean
-  for (i in 1:Q) { est_mean$data[[i]] = result$subjICmean[,i] }
-  for (i in 1:Q) { est_var$data[[i]] = result$subjICvar[,i] }
+  mu <- sigma<- matrix(0,V,Q)
+
+  mu[mwall,] = do.call(cbind, result$subjIC_mean$data)
+  sigma[mwall,] = do.call(cbind, result$subjIC_var$data)
+
+  for (i in 1:Q) { est_mean$data[[i]] = mu[,i] }
+  for (i in 1:Q) { est_var$data[[i]] = sigma[,i] }
 
   RESULT <- list(
     subjICmean_gifti = est_mean,
     subjICvar_gifti = est_var,
-    model_result = result
+    model_result = result,
+    medial_wall = mwall
   )
 
   class(RESULT) <- 'templateICA.gifti'
