@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -t 1-100:1
-#$ -tc 154
+#$ -tc 100
 #$ -V
 #$ -o /mnt/home/keschenb/templateICA/
 #$ -e /mnt/home/keschenb/templateICA/
