@@ -37,7 +37,7 @@ option_list = list(
                 
     make_option(c("--scale"), 
                 action="store_true", 
-                default=TRUE,
+                default=False,
                 help="Scale BOLD data by spatial standard deviation."),
 
     make_option(c("-o", "--outBase"),
