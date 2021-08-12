@@ -49,11 +49,11 @@ else
     output_file=${SUBJ}.L.rfMRI_REST${session}_${encoding}.d${components}
     output_base=${output_dir}/${output_file}
 
-	python ${script_dir}/bin/template_ICA.R --boldFile=${bold_file} \
-                                            --templateMean=${template_mean} \
-                                            --templateVariance=${template_variance} \
-                                            --mwall=${medial_wall} \
-                                            --outBase=${output_base}
+	Rscript --vanilla ${script_dir}/bin/template_ICA.R --boldFile=${bold_file} \
+                                                       --templateMean=${template_mean} \
+                                                       --templateVariance=${template_variance} \
+                                                       --mwall=${medial_wall} \
+                                                       --outBase=${output_base}
 
 
 fi
