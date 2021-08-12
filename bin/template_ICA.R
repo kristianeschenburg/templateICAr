@@ -47,8 +47,10 @@ option_list = list(
                 metavar="character")
 );
 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
+
+print(opt)
 
 output_dir=dirname(opt$outBase)
 if (!file.exists(output_dir)) {dir.create(output_dir)}
