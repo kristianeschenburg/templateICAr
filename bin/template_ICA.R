@@ -3,6 +3,7 @@
 library('optparse')
 library('gifti')
 library('templateICAr')
+library('matrixStats')
 
 option_list = list(
     make_option(c("-b", "--boldFile"), 
