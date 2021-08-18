@@ -82,6 +82,30 @@ BOLD_gifti <- read_gifti(opt$boldFile)
 BOLD_mat <- do.call(cbind, BOLD_gifti$data)
 BOLD_mat <- BOLD_mat[mwall,]
 
+# make sure there are no constant rows
+# if there, interpolate them with the mean
+zeros <- (rowSums(BOLD_mat)==0)
+n <- sum(zeros)
+mu <- as.matrix(colMeans(BOLD_mat[!zeros,]))
+repeats <- matrix(rep(mu,each=n),nrow=n)
+BOLD_mat[zeros,] <- repeats
+
+keep <- rep(TRUE, nvox)
+keep[rowSums(is.nan(tempMean)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowSums(is.na(tempMean)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowSums(is.nan(tempVar)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowSums(is.na(tempVar)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowSums(is.nan(BOLD_mat)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowSums(is.na(BOLD_mat)) > 0] <- FALSE
+cat(sum(!keep))
+keep[rowVars(BOLD) == 0] <- FALSE
+cat(sum(!keep))
+
 cat('Estimating templateICA on subject-level BOLD data with ', Q, 'components.\n')
 result <- templateICA(template_mean = tempMean,
                         template_var = tempVar,
