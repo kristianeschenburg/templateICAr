@@ -90,7 +90,7 @@ mu <- as.matrix(colMeans(BOLD_mat[!zeros,]))
 repeats <- matrix(rep(mu,each=n),nrow=n)
 BOLD_mat[zeros,] <- repeats
 
-keep <- rep(TRUE, nvox)
+keep <- rep(TRUE, nrow(tempMean))
 keep[rowSums(is.nan(tempMean)) > 0] <- FALSE
 cat(sum(!keep))
 keep[rowSums(is.na(tempMean)) > 0] <- FALSE
