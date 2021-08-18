@@ -93,19 +93,19 @@ BOLD_mat[zeros,] <- repeats
 
 keep <- rep(TRUE, nrow(tempMean))
 keep[rowSums(is.nan(tempMean)) > 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
 keep[rowSums(is.na(tempMean)) > 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
 keep[rowSums(is.nan(tempVar)) > 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
 keep[rowSums(is.na(tempVar)) > 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
 keep[rowSums(is.nan(BOLD_mat)) > 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
 keep[rowSums(is.na(BOLD_mat)) > 0] <- FALSE
-cat(sum(!keep))
-keep[rowVars(BOLD) == 0] <- FALSE
-cat(sum(!keep))
+print(sum(!keep))
+keep[rowVars(BOLD_mat) == 0] <- FALSE
+print(sum(!keep))
 
 cat('Estimating templateICA on subject-level BOLD data with ', Q, 'components.\n')
 result <- templateICA(template_mean = tempMean,
