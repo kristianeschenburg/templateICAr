@@ -91,7 +91,7 @@ mu <- as.matrix(colMeans(BOLD_mat[!zeros,]))
 repeats <- matrix(rep(mu,each=n),nrow=n)
 BOLD_mat[zeros,] <- repeats
 
-cat('Estimating templateICA on subject-level BOLD data with ', Q, 'components.\n')
+cat('Estimating templateICA on subject-level BOLD data with', Q, 'components.\n')
 result <- templateICA(template_mean = tempMean,
                         template_var = tempVar,
                         BOLD = BOLD_mat,
